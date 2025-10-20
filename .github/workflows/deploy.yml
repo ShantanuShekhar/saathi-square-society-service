@@ -3,11 +3,11 @@ name: Build & Deploy - Society Service (Local Docker)
 on:
   push:
     branches: [ "feature/init-society-module" ]
-  workflow_dispatch:  # allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   build-deploy:
-    runs-on: self-hosted  # 👈 ensures it runs on your Mac runner
+    runs-on: self-hosted  # Runs on your Mac runner
 
     steps:
       - name: Checkout Code
@@ -34,6 +34,4 @@ jobs:
           echo "✅ Deployment successful! 🎉"
 
       - name: Check running containers
-        run: |
-          echo "🔍 Listing running containers:"
-          docker ps
+        run: docker ps
