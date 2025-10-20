@@ -31,7 +31,7 @@ jobs:
       - name: 🐳 Deploy using Docker Compose
         run: |
           echo "🐳 Deploying all services via docker-compose..."
-          cd ../../
+          cd /Users/shantanushekhar/LevelUp/Project/Backend/saathi-square
           pwd
           ls -l
           if [ -f "docker-compose.yml" ]; then
