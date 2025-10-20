@@ -7,11 +7,13 @@ on:
 
 jobs:
   build-deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted  # your mac-runner
 
     steps:
       - name: 🧭 Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: ☕ Set up JDK 17
         uses: actions/setup-java@v4
@@ -26,20 +28,22 @@ jobs:
           mvn clean package -DskipTests
           echo "✅ Build complete."
 
-      - name: 🧭 Verify Files Before Docker
-        run: |
-          pwd
-          ls -al
-          echo "Checking for docker-compose.yml..."
-          ls -al | grep docker-compose || echo "❌ docker-compose.yml not found"
-
       - name: 🐳 Deploy using Docker Compose
         run: |
           echo "🐳 Deploying all services via docker-compose..."
-          docker-compose down || true
-          docker-compose build --no-cache
-          docker-compose up -d
-          echo "✅ Deployment successful! 🎉"
+          cd ../../
+          pwd
+          ls -l
+          if [ -f "docker-compose.yml" ]; then
+            echo "✅ docker-compose.yml found, starting deployment..."
+            docker-compose down || true
+            docker-compose build --no-cache
+            docker-compose up -d
+            echo "🎉 Deployment successful!"
+          else
+            echo "❌ docker-compose.yml not found at $(pwd)"
+            exit 1
+          fi
 
       - name: 🔍 Verify Running Containers
         run: docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
