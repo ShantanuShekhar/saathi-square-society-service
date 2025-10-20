@@ -11,6 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class SocietyServiceApplication {
 
 	public static void main(String[] args) {
+		
 		SpringApplication.run(SocietyServiceApplication.class, args);
 	}
 }
