@@ -20,7 +20,8 @@ jobs:
           distribution: 'temurin'
 
       - name: Build Society Service
-        run: |
-          echo "🚀 Starting build for Society Service..."
-          mvn -B clean package -DskipTests -f saathi-square-society-service/society-service/pom.xml
-          echo "✅ Build completed successfully!"
+  run: |
+    echo "🚀 Starting build for Society Service..."
+    mvn -B clean package -DskipTests -f society-service/pom.xml
+    echo "✅ Build completed successfully!"
+
