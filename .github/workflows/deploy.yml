@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-deploy:
-    runs-on: self-hosted  # Your Mac self-hosted runner
+    runs-on: self-hosted  # your mac-runner
 
     steps:
       - name: 🧭 Checkout Code
@@ -20,18 +20,19 @@ jobs:
           distribution: 'temurin'
 
       - name: ⚙️ Build Society Service with Maven
-        working-directory: ./society-service
         run: |
-          echo "🚀 Starting Maven build for Society Service..."
-          mvn -B clean package -DskipTests
-          echo "✅ Maven build complete!"
+          echo "🚀 Building society service module..."
+          cd /Users/shantanushekhar/Desktop/Backend/runner/actions-runner/saathi-square/saathi-square-society-service/society-service
+          mvn clean package -DskipTests
+          echo "✅ Build complete."
 
       - name: 🐳 Deploy using Docker Compose
         run: |
-          echo "🐳 Starting Docker deployment..."
-          docker-compose -f docker-compose.yml down || true
-          docker-compose -f docker-compose.yml build --no-cache
-          docker-compose -f docker-compose.yml up -d
+          echo "🐳 Deploying all services via docker-compose..."
+          cd /Users/shantanushekhar/Desktop/Backend/runner/actions-runner/saathi-square
+          docker-compose down || true
+          docker-compose build --no-cache
+          docker-compose up -d
           echo "✅ Deployment successful! 🎉"
 
       - name: 🔍 Verify Running Containers
