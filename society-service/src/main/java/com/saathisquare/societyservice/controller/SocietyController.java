@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.saathisquare.societyservice.dto.FlatInfoDto;
 import com.saathisquare.societyservice.dto.request.CreateSocietyRequest;
 import com.saathisquare.societyservice.dto.request.SocietyDataRequest;
 import com.saathisquare.societyservice.dto.response.PaginatedResponse;
@@ -45,13 +46,19 @@ public class SocietyController {
 	public ResponseEntity<Response<SocietyResponse>> getById(@PathVariable UUID id, @PathVariable String username) {
 		return ResponseEntity.ok(service.getSocietyDetailsBySocietyId(id, username));
 	}
-
+	
 	@PostMapping("/paginated")
+	public ResponseEntity<Response<PaginatedResponse<FlatInfoDto>>> getDetails(
+			@RequestBody SocietyDataRequest request) {
+		return ResponseEntity.ok(service.getDetailsPaginated(request));
+	}
+
+	@PostMapping("/all")
 	public ResponseEntity<Response<PaginatedResponse<Society>>> getAll(@RequestBody SocietyDataRequest request) {
 		return ResponseEntity.ok(service.getAllPaginated(request));
 	}
 
-	@GetMapping("/{id}/count")
+	@GetMapping("/{id}/getCount")
 	public ResponseEntity<Response<UserSocietyDashboardCount>> getSocietyMappingCount(@PathVariable String id) {
 		return ResponseEntity.ok(service.getSocietyMappingCountByUserId(id));
 	}
