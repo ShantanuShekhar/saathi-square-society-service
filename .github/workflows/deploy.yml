@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-deploy:
-    runs-on: self-hosted  # your mac-runner
+    runs-on: self-hosted
 
     steps:
       - name: 🧭 Checkout Code
@@ -26,10 +26,16 @@ jobs:
           mvn clean package -DskipTests
           echo "✅ Build complete."
 
+      - name: 🧭 Verify Files Before Docker
+        run: |
+          pwd
+          ls -al
+          echo "Checking for docker-compose.yml..."
+          ls -al | grep docker-compose || echo "❌ docker-compose.yml not found"
+
       - name: 🐳 Deploy using Docker Compose
         run: |
           echo "🐳 Deploying all services via docker-compose..."
-          cd saathi-square
           docker-compose down || true
           docker-compose build --no-cache
           docker-compose up -d
