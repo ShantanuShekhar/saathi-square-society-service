@@ -1,0 +1,39 @@
+name: Build & Deploy - Society Service (Local Docker)
+
+on:
+  push:
+    branches: [ "feature/init-society-module" ]
+  workflow_dispatch:  # allows manual trigger from GitHub UI
+
+jobs:
+  build-deploy:
+    runs-on: self-hosted  # 👈 ensures it runs on your Mac runner
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: |
+          echo "🚀 Starting Maven build for Society Service..."
+          mvn -B clean package -DskipTests -f society-service/pom.xml
+          echo "✅ Maven build complete!"
+
+      - name: Deploy using Docker Compose
+        run: |
+          echo "🐳 Starting Docker deployment..."
+          docker-compose down || true
+          docker-compose build
+          docker-compose up -d
+          echo "✅ Deployment successful! 🎉"
+
+      - name: Check running containers
+        run: |
+          echo "🔍 Listing running containers:"
+          docker ps
