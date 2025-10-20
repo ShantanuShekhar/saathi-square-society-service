@@ -22,7 +22,7 @@ jobs:
       - name: ⚙️ Build Society Service with Maven
         run: |
           echo "🚀 Building society service module..."
-          cd saathi-square-society-service/society-service
+          cd society-service
           mvn clean package -DskipTests
           echo "✅ Build complete."
 
