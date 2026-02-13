@@ -15,7 +15,7 @@ public class ApplicationController {
 
     @GetMapping
     public ResponseEntity<String> healthCheck() {
-    	log.info("Society Service Application is running...");
+    	log.info("Society Service Application is running..");
         return ResponseEntity.ok("Society Service Application is running...");
     }
 
