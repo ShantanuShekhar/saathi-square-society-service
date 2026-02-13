@@ -30,7 +30,7 @@ public class FlatController {
     }
 
     @PutMapping("/assign-user")
-    public ResponseEntity<String> assignUser(@RequestBody @Valid AssignUserRequest request) {
+    public ResponseEntity<com.saathisquare.societyservice.util.Response<String>> assignUser(@RequestBody @Valid AssignUserRequest request) {
         return ResponseEntity.ok(flatService.assignUserToFlat(request));
     }
 }

@@ -1,11 +1,12 @@
 package com.saathisquare.societyservice.service.impl;
 
 import java.time.LocalDateTime;
-
-
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import com.saathisquare.societyservice.dto.request.AssignUserRequest;
@@ -49,6 +50,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FlatServiceImpl implements FlatService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(FlatServiceImpl.class);
+	
 	private final FlatRepository flatRepository;
 	private final UserFlatMappingRepository userMappingRepo;
 	private final ModelMapper mapper;
@@ -71,18 +74,36 @@ public class FlatServiceImpl implements FlatService {
 
 	// Assign user to a flat
 	@Override
-	public String assignUserToFlat(AssignUserRequest request) {
+	public com.saathisquare.societyservice.util.Response<String> assignUserToFlat(AssignUserRequest request) {
+		String correlationId = MDC.get("correlationId");
+		LOGGER.info("[{}] Attempting to assign user {} to flat {}", correlationId, request.userId(), request.flatId());
+
+		Flat flat = flatRepository.findById(request.flatId())
+				.orElseThrow(() -> new com.saathisquare.societyservice.exception.ResourceNotFoundException("Flat not found with id: " + request.flatId()));
+
 		Optional<UserFlatMapping> existing = userMappingRepo.findByFlatFlatIdAndIsActiveTrue(request.flatId());
 		if (existing.isPresent()) {
-			throw new RuntimeException("Flat already assigned to a user.");
+			LOGGER.warn("[{}] Flat {} is already assigned to a user.", correlationId, request.flatId());
+			throw new com.saathisquare.societyservice.exception.BusinessException("FLAT_ALREADY_ASSIGNED", "Flat already assigned to a user.");
 		}
 
 		UserFlatMapping mapping = UserFlatMapping.builder().userId(request.userId())
-				.flat(flatRepository.getReferenceById(request.flatId())).isActive(true).startDate(LocalDateTime.now())
+				.flat(flat).isActive(true).startDate(LocalDateTime.now())
 				.build();
 
+		// Update flat occupancy status
+		flat.setOccupancyStatus(OccupancyStatus.OCCUPIED);
+		flatRepository.save(flat);
+		
 		userMappingRepo.save(mapping);
-		return "User assigned successfully.";
+		
+		LOGGER.info("[{}] User {} assigned successfully to flat {}. Mapping ID: {}", correlationId, request.userId(), request.flatId(), mapping.getId());
+		
+		com.saathisquare.societyservice.util.Response<String> response = new com.saathisquare.societyservice.util.Response<>();
+		response.setStatus(com.saathisquare.societyservice.util.Constants.SUCCESS_CODE);
+		response.setMessage("User assigned successfully.");
+		response.setData(mapping.getId().toString());
+		return response;
 	}
 
 	/**
